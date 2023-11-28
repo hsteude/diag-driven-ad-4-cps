@@ -1,0 +1,40 @@
+# Source Code Repositories
+.git/
+.svn/
+
+# Build Outputs
+bin/
+obj/
+./pyc
+
+# Development Environment Files
+.vscode/
+.idea/
+
+# Package Manager Cache Directories
+node_modules/
+.m2/
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Sensitive Data
+.env
+secrets.yml
+
+# Logs
+*.log
+logs/
+
+# Test Code and Documentation
+tests/
+docs/
+
+# Large Data
+data/
+dump/
+*.tar.gz
+lightning_logs/
+.venv/
+

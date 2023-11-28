@@ -1,0 +1,51 @@
+SENSOR_COLS = [
+    "FIT101", "LIT101", "MV101", "P101", "P102",
+    "AIT201", "AIT202", "AIT203", "FIT201", "MV201",
+    "P201", "P202", "P203", "P204", "P205", "P206",
+    "DPIT301", "FIT301", "LIT301", "MV301", "MV302",
+    "MV303", "MV304", "P301", "P302",
+    "AIT401", "AIT402", "FIT401", "LIT401", "P401",
+    "P402", "P403", "P404", "UV401",
+    "AIT501", "AIT502", "AIT503", "AIT504", "FIT501",
+    "FIT502", "FIT503", "FIT504", "P501", "P502",
+    "PIT501", "PIT502", "PIT503",
+    "FIT601", "P601", "P602", "P603"
+]
+
+[SUBSYSTEM_MAP]
+Comp_1 = ["FIT101", "LIT101", "MV101", "P101", "P102"]
+Comp_2 = ["AIT201", "AIT202", "AIT203", "FIT201", "MV201", "P201", "P202", "P203", "P204", "P205", "P206"]
+Comp_3 = ["DPIT301", "FIT301", "LIT301", "MV301", "MV302", "MV303", "MV304", "P301", "P302"]
+Comp_4 = ["AIT401", "AIT402", "FIT401", "LIT401", "P401", "P402", "P403", "P404", "UV401"]
+Comp_5 = ["AIT501", "AIT502", "AIT503", "AIT504", "FIT501", "FIT502", "FIT503", "FIT504", "P501", "P502", "PIT501", "PIT502", "PIT503"]
+Comp_6 = ["FIT601", "P601", "P602", "P603"]
+
+[VANILLA_TCN_VAE_CHANNEL_DIMENSIONS]
+enc_tcn1_in_dims = [9999, 60, 40, 30, 20]
+enc_tcn1_out_dims = [60, 40, 30, 20, 10]
+enc_tcn2_in_dims = [10, 10, 8, 5, 3]
+enc_tcn2_out_dims = [10, 8, 5, 3, 1]
+dec_tcn1_in_dims = [1, 3, 5, 8, 10]
+dec_tcn1_out_dims = [3, 5, 8, 10, 10]
+dec_tcn2_in_dims = [10, 20, 30, 40, 60]
+dec_tcn2_out_dims = [20, 30, 40, 60, 9999]
+
+[MULTI_LATENT_TCN_VAE_CHANNEL_DIMENSIONS]
+enc_tcn1_in_dims=[9999, 25, 15, 10, 6]
+enc_tcn1_out_dims=[25, 15, 10, 6, 5]
+enc_tcn2_in_dims=[5, 5, 5, 4, 3]
+enc_tcn2_out_dims=[5, 5, 4, 3, 1]
+dec_tcn1_in_dims=[1, 3, 4, 5, 5]
+dec_tcn1_out_dims=[3, 4, 5, 5, 6]
+dec_tcn2_in_dims=[6, 7, 10, 15, 25]
+dec_tcn2_out_dims=[7, 10, 15, 25, 9999]
+
+[COMBINED_UNIVARIATE_TCN_VAE_CHANNEL_DIMENSIONS]
+enc_tcn1_in_dims=[99, 2, 3, 5, 5]
+enc_tcn1_out_dims=[2, 3, 5, 5, 5]
+enc_tcn2_in_dims=[5, 4, 4, 3, 2]
+enc_tcn2_out_dims=[4, 4, 3, 2, 1]
+dec_tcn1_in_dims=[1, 3, 4, 5, 5]
+dec_tcn1_out_dims=[3, 4, 5, 5, 5]
+dec_tcn2_in_dims=[5, 5, 5, 3, 2]
+dec_tcn2_out_dims=[5, 5, 3, 2, 9999]
