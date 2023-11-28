@@ -2,6 +2,7 @@ from kfp import dsl
 from kfp.dsl import Input, Dataset
 from typing import Dict
 
+
 @dsl.component(
     packages_to_install=["kubernetes", "loguru"],
     base_image="python:3.9",
@@ -225,6 +226,7 @@ def run_pytorch_training_job(
         time.sleep(10)
 
     return f"{minio_model_bucket}/{model_output_file}"
+
 
 @dsl.component(
     packages_to_install=["kubernetes", "loguru"],

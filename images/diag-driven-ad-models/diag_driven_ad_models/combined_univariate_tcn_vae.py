@@ -71,8 +71,7 @@ class CombinedUnivariateTcnVae(pl.LightningModule):
             x[:, i, :].reshape((-1, 1, x.shape[2])) for i in range(self.num_models)
         ]
         pred_resuls_ls = [
-            vae.predict((xi, _))
-            for vae, xi in zip(self.vae_instances, x_univar_ls)
+            vae.predict((xi, _)) for vae, xi in zip(self.vae_instances, x_univar_ls)
         ]
 
         mse_per_sig = torch.stack([pred[0][0] for pred in pred_resuls_ls]).T

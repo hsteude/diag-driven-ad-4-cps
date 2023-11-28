@@ -76,7 +76,6 @@ def diag_tcn_swat_pipeline(
     )
     split_data_task = split_data(normal_df_in=scale_normal_data_task.outputs["df_out"])
 
-
     train_multi_latent_tcn_vae_model_task = run_pytorch_training_job(
         train_df_in=split_data_task.outputs["train_df_out"],
         val_df_in=split_data_task.outputs["val_df_out"],
@@ -97,7 +96,6 @@ def diag_tcn_swat_pipeline(
         seed=seed,
         num_gpu_nodes=3,
     )
-
 
     compute_multi_latent_residuals_task = (
         compute_residuals(
@@ -125,6 +123,7 @@ def diag_tcn_swat_pipeline(
         labels_df_in=basic_labels_cleanup_task.outputs["label_data_out"],
         detrend_window=detrend_window,
     )
+
 
 #    show_results_task = show_results(
 #        metrics_dict_vanilla=compute_vanilla_metrics_task.output,

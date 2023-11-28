@@ -3,10 +3,6 @@ from kfp.dsl import HTML, Input, Output, Dataset, Artifact, Model
 from typing import List, Dict
 
 
-
-
-
-
 @dsl.component(
     packages_to_install=[
         "pandas==1.5.3",
@@ -25,7 +21,13 @@ def analyse_results(
     import pandas as pd
     import plotly.graph_objects as go
     from plotly.subplots import make_subplots
-    from sklearn.metrics import f1_score, roc_auc_score, roc_curve, precision_score, recall_score
+    from sklearn.metrics import (
+        f1_score,
+        roc_auc_score,
+        roc_curve,
+        precision_score,
+        recall_score,
+    )
     import numpy as np
     import pandas as pd
 
@@ -35,7 +37,8 @@ def analyse_results(
 
     def compute_metrics(df: pd.DataFrame) -> pd.DataFrame:
         """
-        Compute F1 scores, ROC-AUC, and the optimal threshold based on F1 score optimization for each model and metric.
+        Compute F1 scores, ROC-AUC, and the optimal threshold based on F1 score
+        optimization for each model and metric.
 
         Parameters:
         - df: DataFrame containing labels and predictions.
@@ -55,7 +58,9 @@ def analyse_results(
 
                 _, _, thresholds = roc_curve(labels, scores)
                 # Calculate F1 score for each threshold
-                f1_scores = [f1_score(labels, scores > threshold) for threshold in thresholds]
+                f1_scores = [
+                    f1_score(labels, scores > threshold) for threshold in thresholds
+                ]
                 # Find the optimal threshold (max F1 score)
                 optimal_idx = np.argmax(f1_scores)
                 optimal_threshold = thresholds[optimal_idx]
@@ -66,19 +71,20 @@ def analyse_results(
                 precision = precision_score(labels, predictions)
                 recall = recall_score(labels, predictions)
 
-                results.append({
-                    "model": model,
-                    "subsystem": subsystem,
-                    "f1_score": f1,
-                    "roc_auc": auc_roc,
-                    "optimal_threshold": optimal_threshold,
-                    "precision": precision,
-                    "recall": recall
-                })
+                results.append(
+                    {
+                        "model": model,
+                        "subsystem": subsystem,
+                        "f1_score": f1,
+                        "roc_auc": auc_roc,
+                        "optimal_threshold": optimal_threshold,
+                        "precision": precision,
+                        "recall": recall,
+                    }
+                )
 
         metrics_df = pd.DataFrame(results)
         return metrics_df
-
 
     def create_plotly_table(df):
         """
