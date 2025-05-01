@@ -14,7 +14,7 @@ from simulated_components import (
 )
 from common_components import run_pytorch_training_job, run_hyper_parameter_tuning
 import toml
-from typing import Dict
+from typing import Dict,List
 
 
 @dsl.pipeline
@@ -55,7 +55,7 @@ def diag_tcn_simulated_pipeline(
         df_val=split_data_task.outputs["val_data"],
         experiment_name="vanilla-simulated",
         image="hsteude/diag-driven-ad-models:v76",
-        namespace="henrik-steude",
+        namespace="henrik-sebastian-steude",
         seed=seed,
         max_epochs=100,
         model_name="vanilla-tcn-vae",
@@ -72,7 +72,7 @@ def diag_tcn_simulated_pipeline(
         df_val=split_data_task.outputs["val_data"],
         experiment_name="multi-latent-simulated",
         image="hsteude/diag-driven-ad-models:v76",
-        namespace="henrik-steude",
+        namespace="henrik-sebastian-steude",
         seed=seed,
         max_epochs=100,
         model_name="multi-latent-tcn-vae",
@@ -89,7 +89,7 @@ def diag_tcn_simulated_pipeline(
         df_val=split_data_task.outputs["val_data"],
         experiment_name="univar-simulated",
         image="hsteude/diag-driven-ad-models:v76",
-        namespace="henrik-steude",
+        namespace="henrik-sebastian-steude",
         seed=seed,
         max_epochs=100,
         model_name="combined-univariate-tcn-vae",
@@ -107,9 +107,9 @@ def diag_tcn_simulated_pipeline(
         model_name="vanilla-tcn-vae",
         data_module_name="simulated",
         config_path="./sim-all-config.toml",
-        minio_model_bucket="hs-bucket",
+        minio_model_bucket="henrik-data",
         training_image="hsteude/diag-driven-ad-models:v76",
-        namespace="henrik-steude",
+        namespace="henrik-sebastian-steude",
         num_dl_workers=12,
         number_trainng_samples=10_000,
         number_validation_samples=1_000,
@@ -128,9 +128,9 @@ def diag_tcn_simulated_pipeline(
         model_name="multi-latent-tcn-vae",
         data_module_name="simulated",
         config_path="./sim-all-config.toml",
-        minio_model_bucket="hs-bucket",
+        minio_model_bucket="henrik-data",
         training_image="hsteude/diag-driven-ad-models:v76",
-        namespace="henrik-steude",
+        namespace="henrik-sebastian-steude",
         num_dl_workers=12,
         number_trainng_samples=10_000,
         number_validation_samples=1_000,
@@ -149,9 +149,9 @@ def diag_tcn_simulated_pipeline(
         model_name="combined-univariate-tcn-vae",
         data_module_name="simulated",
         config_path="./sim-all-config.toml",
-        minio_model_bucket="hs-bucket",
+        minio_model_bucket="henrik-data",
         training_image="hsteude/diag-driven-ad-models:v76",
-        namespace="henrik-steude",
+        namespace="henrik-sebastian-steude",
         num_dl_workers=12,
         number_trainng_samples=10_000,
         number_validation_samples=1_000,

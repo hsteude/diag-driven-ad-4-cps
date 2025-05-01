@@ -4,8 +4,8 @@ from typing import List
 
 
 @dsl.component(
-    packages_to_install=["pandas==1.5.3", "plotly"],
-    base_image="python:3.9",
+    packages_to_install=["pandas", "plotly"],
+    base_image="python:3.12",
 )
 def show_results(
     metrics_dict_vanilla: dict,
@@ -60,8 +60,8 @@ def show_results(
 
 
 @dsl.component(
-    packages_to_install=["pandas==1.5.3", "pyarrow", "loguru"],
-    base_image="python:3.9",
+    packages_to_install=["pandas", "pyarrow", "loguru"],
+    base_image="python:3.12",
 )
 def get_metrics(
     attack_residuals_df_in: Input[Dataset],
@@ -212,10 +212,10 @@ def get_metrics(
 
 @dsl.component(
     packages_to_install=[
-        "pandas==1.5.3",
+        "pandas",
         "pyarrow",
     ],
-    base_image="python:3.9",
+    base_image="python:3.12",
 )
 def format_labels_df_for_metric_computation(
     attack_df_in: Input[Dataset],
@@ -292,7 +292,7 @@ def compute_residuals(
     residual_df: Output[Dataset],
 ):
     return dsl.ContainerSpec(
-        image="hsteude/diag-driven-ad-models:v60",
+        image="hsteude/diag-driven-ad-models:v76",
         command=["python", "main.py"],
         args=[
             "compute-residuals",
@@ -318,23 +318,30 @@ def compute_residuals(
 
 @dsl.component(
     packages_to_install=[
-        "pandas==1.5.3",
+        "pandas",
         "pyarrow",
         "openpyxl",
+        "s3fs"
     ],
-    base_image="python:3.9",
+    base_image="python:3.12",
 )
 def basic_cleanup_time_series_data(
-    normal_data_in: Input[Dataset],
-    attack_data_in: Input[Dataset],
+    normal_data_path: str,
+    attack_data_path: str,
     normal_data_out: Output[Dataset],
     attack_data_out: Output[Dataset],
 ):
     import pandas as pd
+    import os
+
+    storage_options={
+        "key": os.environ.get('AWS_ACCESS_KEY_ID'),
+        "secret": os.environ.get('AWS_SECRET_ACCESS_KEY'),
+        "client_kwargs": {"endpoint_url": 'http://minio.minio'}}
 
     df_normal_v1, df_attack_v0 = [
-        pd.read_excel(path, header=1)
-        for path in (normal_data_in.path, attack_data_in.path)
+        pd.read_excel(path, header=1, storage_options=storage_options)
+        for path in (normal_data_path, attack_data_path)
     ]
 
     # convert to pandas time series
@@ -355,22 +362,29 @@ def basic_cleanup_time_series_data(
 
 @dsl.component(
     packages_to_install=[
-        "pandas==1.5.3",
+        "pandas",
         "pyarrow",
         "openpyxl",
+        "s3fs"
     ],
-    base_image="python:3.9",
+    base_image="python:3.12",
 )
 def basic_cleanup_label_data(
-    label_data_in: Input[Dataset],
+    label_data_path: str,
     label_data_out: Output[Dataset],
 ):
     from datetime import datetime
     import pandas as pd
     import re
+    import os
+
+    storage_options={
+        "key": os.environ.get('AWS_ACCESS_KEY_ID'),
+        "secret": os.environ.get('AWS_SECRET_ACCESS_KEY'),
+        "client_kwargs": {"endpoint_url": 'http://minio.minio'}}
 
     # read raw labels files
-    df_label = pd.read_excel(label_data_in.path)
+    df_label = pd.read_excel(label_data_path, storage_options=storage_options)
 
     # filter labels df to the attack that have a end date attached
     # transofrm end time to full timestmap
@@ -411,7 +425,7 @@ def basic_cleanup_label_data(
 
 @dsl.component(
     packages_to_install=[
-        "pandas==1.5.3",
+        "pandas",
         "pyarrow",
         "scikit-learn",
     ],
@@ -435,7 +449,7 @@ def fit_scaler(
 
 @dsl.component(
     packages_to_install=[
-        "pandas==1.5.3",
+        "pandas",
         "pyarrow",
         "scikit-learn",
     ],
@@ -465,7 +479,7 @@ def scale_data(
 
 @dsl.component(
     packages_to_install=[
-        "pandas==1.5.3",
+        "pandas",
         "pyarrow",
         "scikit-learn",
     ],

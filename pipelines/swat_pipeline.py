@@ -1,6 +1,7 @@
 # imports
 from kfp.components import load_component_from_file
 from kfp import dsl
+from kfp import kubernetes
 from kfp.client import Client
 import constants as const
 import os
@@ -15,8 +16,26 @@ from swat_components import (
     get_metrics,
     show_results,
 )
+from typing import List
 
 from common_components import run_pytorch_training_job
+
+def add_minio_env_vars_to_tasks(task_list: List[dsl.PipelineTask]) -> None:
+    """Adds environment variables for MinIO to the tasks"""
+    for task in task_list:
+        kubernetes.use_secret_as_env(
+            task,
+            secret_name="s3creds",
+            secret_key_to_env={
+                "AWS_ACCESS_KEY_ID": "AWS_ACCESS_KEY_ID",
+                "AWS_SECRET_ACCESS_KEY": "AWS_SECRET_ACCESS_KEY",
+            },
+        )
+            # Add S3_ENDPOINT from environment variable
+        s3_endpoint = os.environ.get("S3_ENDPOINT")
+        if s3_endpoint:
+            task.set_env_variable(name="S3_ENDPOINT", value=os.environ.get("S3_ENDPOINT"))
+
 
 
 # define pipeline
@@ -32,25 +51,25 @@ def diag_tcn_swat_pipeline(
     early_stopping_patience: int = 30,
     max_epochs: int = 1000,
 ):
-    import_normal_task = dsl.importer(
-        artifact_uri=normal_data_path, artifact_class=dsl.Dataset
-    )
-
-    import_attack_task = dsl.importer(
-        artifact_uri=attack_data_path, artifact_class=dsl.Dataset
-    )
-
-    import_labels_task = dsl.importer(
-        artifact_uri=label_data_path, artifact_class=dsl.Dataset
-    )
+    # import_normal_task = dsl.importer(
+    #     artifact_uri=normal_data_path, artifact_class=dsl.Dataset
+    # )
+    #
+    # import_attack_task = dsl.importer(
+    #     artifact_uri=attack_data_path, artifact_class=dsl.Dataset
+    # )
+    #
+    # import_labels_task = dsl.importer(
+    #     artifact_uri=label_data_path, artifact_class=dsl.Dataset
+    # )
 
     basic_ts_cleanup_task = basic_cleanup_time_series_data(
-        normal_data_in=import_normal_task.output,
-        attack_data_in=import_attack_task.output,
+        normal_data_path=normal_data_path,
+        attack_data_path=attack_data_path,
     )
 
     basic_labels_cleanup_task = basic_cleanup_label_data(
-        label_data_in=import_labels_task.output,
+        label_data_path=label_data_path,
     )
 
     compute_labels_time_series_task = format_labels_df_for_metric_computation(
@@ -82,9 +101,9 @@ def diag_tcn_swat_pipeline(
         model_name="multi-latent-tcn-vae",
         data_module_name="SWaT",
         config_path="./swat-config.toml",
-        minio_model_bucket="hs-bucket",
+        minio_model_bucket="henrik-data",
         training_image="hsteude/diag-driven-ad-models:v76",
-        namespace="henrik-steude",
+        namespace="henrik-sebastian-steude",
         num_dl_workers=12,
         number_trainng_samples=10_000,
         number_validation_samples=1_000,
@@ -123,25 +142,22 @@ def diag_tcn_swat_pipeline(
         labels_df_in=basic_labels_cleanup_task.outputs["label_data_out"],
         detrend_window=detrend_window,
     )
+    add_minio_env_vars_to_tasks([basic_labels_cleanup_task, basic_ts_cleanup_task, train_multi_latent_tcn_vae_model_task])
 
 
-#    show_results_task = show_results(
-#        metrics_dict_vanilla=compute_vanilla_metrics_task.output,
-#        metrics_dict_multi_latent=compute_multi_latent_metrics_task.output,
-#        metrics_dict_combined=compute_combined_univar_metrics_task.output,
-#    )
 
 
 # compile and run pipeline
 client = Client()
 args = dict(
-    normal_data_path="minio://swat-dataset/SWaT.A1 _ A2_Dec 2015/Physical/SWaT_Dataset_Normal_v1.xlsx",
-    attack_data_path="minio://swat-dataset/SWaT.A1 _ A2_Dec 2015/Physical/SWaT_Dataset_Attack_v0.xlsx",
-    label_data_path="minio://swat-dataset/SWaT.A1 _ A2_Dec 2015/List_of_attacks_Final.xlsx",
+    normal_data_path="s3://henrik-data/SWAT_2015/Physical/SWaT_Dataset_Normal_v1.xlsx",
+    attack_data_path="s3://henrik-data/SWAT_2015/Physical/SWaT_Dataset_Normal_v0.xlsx",
+    label_data_path="s3://henrik-data/SWAT_2015/List_of_attacks_Final.xlsx",
     detrend_window=10800,
     seed=42,
     seq_len=500,
     early_stopping_patience=30,
+    max_epochs=1000
 )
 client.create_run_from_pipeline_func(
     diag_tcn_swat_pipeline, arguments=args, experiment_name="diag_drive_ad_swat"

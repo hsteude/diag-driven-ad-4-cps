@@ -1,6 +1,6 @@
 from kfp import dsl
 from kfp.dsl import Input, Dataset
-from typing import Dict
+from typing import Dict, List
 
 
 @dsl.component(
@@ -106,6 +106,7 @@ def run_pytorch_training_job(
                 {
                     "name": "pytorch",
                     "image": training_image,
+                    "resources": {"limits": {"nvidia.com/gpu": 1}},
                     "imagePullPolicy": "Always",
                     "command": command,
                     "env": [

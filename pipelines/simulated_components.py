@@ -11,7 +11,7 @@ from typing import List, Dict
         "loguru",
         "scikit-learn",
     ],
-    base_image="python:3.9",
+    base_image="hsteude/diag-driven-ad-models:v76",
 )
 def analyse_results(
     residuals_df_in: Input[Dataset],
@@ -230,7 +230,7 @@ def analyse_results(
         "loguru",
         "scikit-learn",
     ],
-    base_image="python:3.9",
+    base_image="hsteude/diag-driven-ad-models:v76",
 )
 def train_gmms(
     data_path: Input[Dataset],
@@ -360,7 +360,7 @@ def generate_data(
     df_out: Output[Dataset],
 ):
     return dsl.ContainerSpec(
-        image="hsteude/diag-driven-ad-models:v67",
+        image="hsteude/diag-driven-ad-models:v76",
         command=["python", "main.py"],
         args=[
             "generate_data",
@@ -394,7 +394,7 @@ def generate_data(
         "pyarrow",
         "scipy",
     ],
-    base_image="python:3.9",
+    base_image="hsteude/diag-driven-ad-models:v76",
 )
 def generate_anomaly_dfs(
     healthy_df: Input[Dataset],
@@ -444,7 +444,7 @@ def generate_anomaly_dfs(
         "scipy",
         "loguru",
     ],
-    base_image="python:3.9",
+    base_image="hsteude/diag-driven-ad-models:v76",
 )
 def plot_causal_factors(
     input_data: Input[Dataset],
@@ -477,7 +477,7 @@ def plot_causal_factors(
         "scipy",
         "loguru",
     ],
-    base_image="python:3.9",
+    base_image="hsteude/diag-driven-ad-models:v76",
 )
 def plot_signals(
     input_data: Input[Dataset], signals_plot: Output[HTML], dataset_name: str
@@ -533,7 +533,7 @@ def plot_signals(
 
 @dsl.component(
     packages_to_install=["pandas==1.5.3", "pyarrow"],
-    base_image="python:3.9",
+    base_image="hsteude/diag-driven-ad-models:v76",
 )
 def split_data(
     simulate_data_normal: Input[Dataset],
@@ -561,7 +561,7 @@ def split_data(
 
 @dsl.component(
     packages_to_install=["pandas==1.5.3", "pyarrow"],
-    base_image="python:3.9",
+    base_image="hsteude/diag-driven-ad-models:v76",
 )
 def compute_metrics(
     residual_df_healthy: Input[Dataset],
